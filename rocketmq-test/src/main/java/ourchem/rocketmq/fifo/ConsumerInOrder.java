@@ -27,6 +27,7 @@ public class ConsumerInOrder {
          */
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
 
+        //订阅三个tag
         consumer.subscribe("FIFO", "TagA || TagC || TagD");
 
         consumer.registerMessageListener(new MessageListenerOrderly() {
@@ -46,6 +47,7 @@ public class ConsumerInOrder {
                     TimeUnit.SECONDS.sleep(random.nextInt(10));
                 } catch (Exception e) {
                     e.printStackTrace();
+
                 }
                 return ConsumeOrderlyStatus.SUCCESS;
             }

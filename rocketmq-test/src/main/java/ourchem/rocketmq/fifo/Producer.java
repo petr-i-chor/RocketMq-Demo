@@ -35,7 +35,7 @@ public class Producer {
         for (int i = 0; i < 10; i++) {
             // 加个时间前缀
             String body = dateStr + "I`m FIFO  " + orderList.get(i);
-            Message msg = new Message("FIFO", tags[i % tags.length], "KEY" + i, body.getBytes());
+            Message msg = new Message("newFIFO", tags[i % tags.length], "KEY" + i, body.getBytes());
 
             SendResult sendResult = producer.send(msg, new MessageQueueSelector() {
                 @Override
@@ -44,7 +44,7 @@ public class Producer {
                     long index = id % mqs.size();
                     return mqs.get((int) index);
                 }
-            }, orderList.get(i).getOrderId());//订单id
+            }, orderList.get(i).getOrderId());//订单id,作为参数传入MessageQueueSelector
 
             System.out.println(String.format("SendResult status:%s, queueId:%d, body:%s",
                     sendResult.getSendStatus(),

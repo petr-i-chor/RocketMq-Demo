@@ -1,4 +1,4 @@
-package ourchem.rocketmq.producer;
+package ourchem.rocketmq.general;
 
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
@@ -43,7 +43,7 @@ public class AsyncProducer {
                 }
             });
         }
-        // 等待5s
+        // 等待5s,不等待会导致休息未发送producer就关闭了
         countDownLatch.await(5, TimeUnit.SECONDS);
         // 如果不再发送消息，关闭Producer实例。
         producer.shutdown();
