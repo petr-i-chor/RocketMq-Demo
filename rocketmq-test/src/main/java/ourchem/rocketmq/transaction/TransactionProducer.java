@@ -16,7 +16,18 @@ public class TransactionProducer {
         TransactionListener transactionListener = new TransactionListenerImpl();
         TransactionMQProducer producer = new TransactionMQProducer("please_rename_unique_group_name");
         NamesrvAddr.getNamesrvAddr(producer);
-        ExecutorService executorService = new ThreadPoolExecutor(2, 5, 100, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(2000), new ThreadFactory() {
+
+        /**
+         * 定义一个线程池
+         * @param corePoolSize 线程池中核心线程数量
+         * @param maximumPoolSize 线程池中最多线程数
+         * @param keepAliveTime 这是一个时间。当线程池中线程数量大于核心线程数量，多余空闲线程的存活时长
+         * @param unit 时间单位
+         * @param workQueue 临时存放任务的队列，其参数就是队列的长度
+         * @param threadFactory 线程工厂
+         */
+        ExecutorService executorService = new ThreadPoolExecutor(2, 5, 100, TimeUnit.SECONDS,
+                new ArrayBlockingQueue<Runnable>(2000), new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
@@ -24,18 +35,24 @@ public class TransactionProducer {
                 return thread;
             }
         });
+
+        // 为生产者指定一个线程池
         producer.setExecutorService(executorService);
+        // 为生产者添加事务监听器
         producer.setTransactionListener(transactionListener);
         producer.start();
         String[] tags = new String[] {"TagA", "TagB", "TagC", "TagD", "TagE"};
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             try {
                 Message msg =
-                        new Message("TopicTest1234", tags[i % tags.length], "KEY" + i,
+                        new Message("TopicTransaction", tags[i % tags.length], "KEY" + i,
                                 ("Hello RocketMQ " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
-                SendResult sendResult = producer.sendMessageInTransaction(msg, null);
-                System.out.printf("%s%n", sendResult);
-                Thread.sleep(10);
+                // 发送事务消息
+                // tags[i]用于指定在执行本地事务时要使用的业务参数
+
+                SendResult sendResult = producer.sendMessageInTransaction(msg, null);//发送事务消息
+//                System.out.printf("%s%n", sendResult);
+                Thread.sleep(3);
             } catch (MQClientException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }

@@ -41,7 +41,7 @@ public class Producer {
                 @Override
                 public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
                     Long id = (Long) arg;  //根据订单id选择发送queue
-                    long index = id % mqs.size();
+                    long index = id % mqs.size(); //通过取模得到0,1,2...mqs.size()个队列，将相同orderId的msg存进相同队列
                     return mqs.get((int) index);
                 }
             }, orderList.get(i).getOrderId());//订单id,作为参数传入MessageQueueSelector
