@@ -44,8 +44,7 @@ public class TransactionProducer {
         String[] tags = new String[] {"TagA", "TagB", "TagC", "TagD", "TagE"};
         for (int i = 0; i < 5; i++) {
             try {
-                Message msg =
-                        new Message("TopicTransaction", tags[i % tags.length], "KEY" + i,
+                Message msg = new Message("TopicTransaction", tags[i % tags.length], "KEY" + i,
                                 ("Hello RocketMQ " + i).getBytes(RemotingHelper.DEFAULT_CHARSET));
                 // 发送事务消息
                 // tags[i]用于指定在执行本地事务时要使用的业务参数
